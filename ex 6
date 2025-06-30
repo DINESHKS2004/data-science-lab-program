@@ -1,0 +1,25 @@
+# Lists of item prices and quantities
+item_prices = [100, 50, 20]        # e.g., 3 items
+item_quantities = [2, 3, 5]        # quantities for each item
+
+# Given rates
+discount_rate = 10  # in percent
+tax_rate = 5        # in percent
+
+# Step 1: Calculate subtotal
+subtotal = sum(p * q for p, q in zip(item_prices, item_quantities))
+
+# Step 2: Apply discount
+discount = subtotal * (discount_rate / 100)
+
+# Step 3: Apply tax on discounted amount
+tax = (subtotal - discount) * (tax_rate / 100)
+
+# Step 4: Final total cost
+total_cost = subtotal - discount + tax
+
+# Display result
+print("Subtotal:", subtotal)
+print("Discount:", discount)
+print("Tax:", tax)
+print("Total cost to customer:", total_cost)
