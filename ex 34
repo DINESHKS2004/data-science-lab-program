@@ -1,0 +1,66 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
+
+# Step 1: Load dataset
+try:
+    df = pd.read_csv("patient_treatment_data.csv")  # Replace with your CSV file
+except FileNotFoundError:
+    print("Error: 'patient_treatment_data.csv' not found.")
+    exit()
+
+print("✅ Dataset loaded successfully.")
+print("📊 Columns:", df.columns.tolist())
+
+# Step 2: Encode target variable ("Good", "Bad") to (1, 0)
+if 'outcome' not in df.columns:
+    print("Error: 'outcome' column not found.")
+    exit()
+
+label_encoder = LabelEncoder()
+df['outcome'] = label_encoder.fit_transform(df['outcome'])  # Good=1, Bad=0
+
+# Step 3: Separate features and target
+X = df.drop(columns=['outcome'])
+y = df['outcome']
+
+# Step 4: Scale features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Step 5: Train/test split
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# Step 6: Train KNN model
+k = 5  # You can tune this value
+knn = KNeighborsClassifier(n_neighbors=k)
+knn.fit(X_train, y_train)
+
+# Step 7: Predict on test set
+y_pred = knn.predict(X_test)
+
+# Step 8: Evaluate model
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred, zero_division=0)
+recall = recall_score(y_test, y_pred, zero_division=0)
+f1 = f1_score(y_test, y_pred, zero_division=0)
+
+# Step 9: Display metrics
+print("\n📈 Model Evaluation Metrics:")
+print(f"Accuracy :  {accuracy:.4f}")
+print(f"Precision:  {precision:.4f}")
+print(f"Recall   :  {recall:.4f}")
+print(f"F1 Score :  {f1:.4f}")
+
+print("\n📋 Classification Report:")
+print(classification_report(y_test, y_pred, target_names=label_encoder.classes_))
+
+# Step 10: Preview predictions
+results = pd.DataFrame(X_test, columns=X.columns if hasattr(X, 'columns') else [f'Feature_{i}' for i in range(X.shape[1])])
+results['Actual'] = label_encoder.inverse_transform(y_test)
+results['Predicted'] = label_encoder.inverse_transform(y_pred)
+
+print("\n🔍 Sample Predictions:")
+print(results.head())
