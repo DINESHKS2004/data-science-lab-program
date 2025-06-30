@@ -1,0 +1,40 @@
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+# Load the dataset
+try:
+    df = pd.read_csv("housing_data.csv")  # Must have features like 'area', 'bedrooms', and 'price'
+except FileNotFoundError:
+    print("Error: 'housing_data.csv' not found.")
+    exit()
+
+# Check for 'price' column
+if 'price' not in df.columns:
+    print("Error: Dataset must contain a 'price' column.")
+    exit()
+
+# Separate features and target
+X = df.drop(columns=['price'])
+y = df['price']
+
+# Train/test split (optional for evaluation)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train Linear Regression model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Show user which features to input
+print("Enter the following details of the house:")
+
+new_data = []
+for col in X.columns:
+    val = float(input(f"{col.capitalize()}: "))
+    new_data.append(val)
+
+# Predict the price
+predicted_price = model.predict([new_data])[0]
+
+# Output
+print(f"\n💰 Estimated Price of the House: ₹{predicted_price:,.2f}")
