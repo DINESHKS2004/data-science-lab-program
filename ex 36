@@ -1,0 +1,58 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Step 1: Load stock data from CSV
+try:
+    df = pd.read_csv("stock_data.csv", parse_dates=["date"])
+except FileNotFoundError:
+    print("❌ Error: File 'stock_data.csv' not found.")
+    exit()
+
+# Step 2: Sort by date and check necessary column
+df = df.sort_values("date")
+if "close" not in df.columns:
+    print("❌ Error: 'close' column (closing price) not found in the dataset.")
+    exit()
+
+# Step 3: Calculate basic variability statistics
+mean_price = df["close"].mean()
+std_price = df["close"].std()
+var_price = df["close"].var()
+min_price = df["close"].min()
+max_price = df["close"].max()
+price_range = max_price - min_price
+
+# Step 4: Calculate daily returns
+df["daily_return"] = df["close"].pct_change()
+
+# Step 5: Print variability insights
+print("\n📊 Stock Price Variability Analysis:")
+print(f"Mean Closing Price     : ₹{mean_price:.2f}")
+print(f"Standard Deviation     : ₹{std_price:.2f}")
+print(f"Variance               : ₹{var_price:.2f}")
+print(f"Price Range            : ₹{price_range:.2f}")
+print(f"Minimum Closing Price  : ₹{min_price:.2f}")
+print(f"Maximum Closing Price  : ₹{max_price:.2f}")
+
+# Step 6: Plot stock price trend
+plt.figure(figsize=(10, 5))
+plt.plot(df["date"], df["close"], label="Closing Price", color='blue')
+plt.title("Stock Price Trend Over Time")
+plt.xlabel("Date")
+plt.ylabel("Price (₹)")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# Step 7: Plot daily returns
+plt.figure(figsize=(10, 4))
+plt.plot(df["date"], df["daily_return"], label="Daily Return", color='orange')
+plt.axhline(0, linestyle='--', color='gray')
+plt.title("Daily Stock Returns")
+plt.xlabel("Date")
+plt.ylabel("Return")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
