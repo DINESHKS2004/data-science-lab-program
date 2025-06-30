@@ -1,0 +1,74 @@
+import pandas as pd
+from sklearn.tree import DecisionTreeRegressor, export_text
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import train_test_split
+
+# Load dataset
+try:
+    df = pd.read_csv("used_cars.csv")  # must include 'price' column and car features
+except FileNotFoundError:
+    print("Error: 'used_cars.csv' not found.")
+    exit()
+
+if 'price' not in df.columns:
+    print("Error: Dataset must include a 'price' column.")
+    exit()
+
+# Separate features and target
+X = df.drop(columns=['price'])
+y = df['price']
+
+# Identify categorical and numerical columns
+categorical_cols = X.select_dtypes(include=['object']).columns.tolist()
+numerical_cols = X.select_dtypes(exclude=['object']).columns.tolist()
+
+# Preprocessing pipeline
+preprocessor = ColumnTransformer([
+    ('num', 'passthrough', numerical_cols),
+    ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_cols)
+])
+
+# CART model pipeline
+model = Pipeline([
+    ('preprocessor', preprocessor),
+    ('regressor', DecisionTreeRegressor(random_state=42))
+])
+
+# Train/test split for internal validation
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model.fit(X_train, y_train)
+
+# Get user input
+print("\n🔧 Enter the following car details:")
+
+user_input = {}
+for col in numerical_cols + categorical_cols:
+    val = input(f"{col} ({'number' if col in numerical_cols else 'text'}): ")
+    user_input[col] = float(val) if col in numerical_cols else val
+
+# Create a DataFrame for the new sample
+new_sample = pd.DataFrame([user_input])
+
+# Predict price
+predicted_price = model.predict(new_sample)[0]
+
+# Output predicted price
+print(f"\n💰 Predicted Price of the Car: ₹{predicted_price:,.2f}")
+
+# Show decision path using the original fitted regressor and transformed input
+# Refit the transformer and extract the trained tree
+X_preprocessed = preprocessor.fit_transform(X)
+regressor = DecisionTreeRegressor(random_state=42)
+regressor.fit(X_preprocessed, y)
+
+# Transform new input
+new_input_transformed = preprocessor.transform(new_sample)
+
+# Get decision path text
+tree_rules = export_text(regressor, feature_names=preprocessor.get_feature_names_out())
+
+# Show tree path (optional: for explanation only)
+print("\n🧠 Decision Path (Simplified Tree Rules):")
+print(tree_rules)
