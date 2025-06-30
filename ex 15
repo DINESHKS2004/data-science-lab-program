@@ -1,0 +1,13 @@
+# Sample post likes data
+likes_data = {
+    'post_id': [101, 102, 103, 104, 105, 106],
+    'likes': [10, 15, 10, 20, 15, 10]
+}
+df_likes = pd.DataFrame(likes_data)
+
+# Frequency distribution of likes
+like_freq = df_likes['likes'].value_counts().sort_index()
+
+# Display result
+print("Frequency distribution of likes among posts:")
+print(like_freq)
