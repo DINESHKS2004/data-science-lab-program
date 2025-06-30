@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset
+try:
+    df = pd.read_csv("clinical_trial.csv")
+except FileNotFoundError:
+    print("Error: 'clinical_trial.csv' not found.")
+    exit()
+
+# Check for required columns
+if not {'group', 'outcome'}.issubset(df.columns):
+    print("Error: CSV file must contain 'group' and 'outcome' columns.")
+    exit()
+
+# Separate the two groups
+control = df[df['group'] == 'control']['outcome'].dropna()
+treatment = df[df['group'] == 'treatment']['outcome'].dropna()
+
+# Perform independent two-sample t-test
+t_stat, p_value = stats.ttest_ind(treatment, control)
+
+# Print test results
+print(f"\nT-statistic: {t_stat:.4f}")
+print(f"P-value: {p_value:.4f}")
+
+# Interpretation
+alpha = 0.05
+if p_value < alpha:
+    print("✅ Result: Statistically significant difference between treatment and control groups.")
+else:
+    print("❌ Result: No statistically significant difference found.")
+
+# --- Visualization ---
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='group', y='outcome', data=df, palette='Set2')
+plt.title("Outcome Comparison: Treatment vs Control")
+plt.xlabel("Group")
+plt.ylabel("Outcome Measurement")
+plt.grid(True)
+
+# Annotate with p-value
+plt.text(0.5, max(df['outcome']) * 0.95, f'p-value = {p_value:.4f}', 
+         ha='center', fontsize=12, color='red')
+
+plt.tight_layout()
+plt.show()
