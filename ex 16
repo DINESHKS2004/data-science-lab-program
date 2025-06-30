@@ -1,0 +1,41 @@
+import pandas as pd
+from collections import Counter
+import re
+
+# Sample customer reviews dataset (you can replace this with actual dataset loading)
+data = {
+    'review': [
+        "Great product! Really loved it.",
+        "The product is okay, not the best.",
+        "Worst experience ever. Not recommended.",
+        "Excellent quality and fast delivery.",
+        "Very bad experience. Poor quality."
+    ]
+}
+
+# Create a DataFrame
+df = pd.DataFrame(data)
+
+# Function to clean and tokenize text
+def preprocess_text(text):
+    # Convert to lowercase
+    text = text.lower()
+    # Remove punctuation and special characters using regex
+    text = re.sub(r'[^a-z\s]', '', text)
+    # Tokenize by splitting
+    words = text.split()
+    return words
+
+# Combine all reviews into a single list of words
+all_words = []
+for review in df['review']:
+    words = preprocess_text(review)
+    all_words.extend(words)
+
+# Calculate frequency distribution using Counter
+word_freq = Counter(all_words)
+
+# Display frequency distribution
+print("Word Frequency Distribution:")
+for word, freq in word_freq.most_common():
+    print(f"{word}: {freq}")
