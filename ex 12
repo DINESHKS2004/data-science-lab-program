@@ -1,0 +1,22 @@
+# Sample data
+months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+temperature = [22, 24, 28, 30, 35, 33]
+rainfall = [78, 60, 40, 30, 20, 10]
+
+# 1. Line plot of temperature
+plt.figure(figsize=(6, 4))
+plt.plot(months, temperature, marker='o', color='orange')
+plt.title("Monthly Temperature - Line Plot")
+plt.xlabel("Month")
+plt.ylabel("Temperature (°C)")
+plt.tight_layout()
+plt.show()
+
+# 2. Scatter plot of rainfall
+plt.figure(figsize=(6, 4))
+plt.scatter(months, rainfall, color='blue')
+plt.title("Monthly Rainfall - Scatter Plot")
+plt.xlabel("Month")
+plt.ylabel("Rainfall (mm)")
+plt.tight_layout()
+plt.show()
