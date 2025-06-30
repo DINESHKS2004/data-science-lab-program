@@ -1,0 +1,50 @@
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# Load the dataset
+try:
+    df = pd.read_csv("customer_churn.csv")  # Must have features + 'churn' column
+except FileNotFoundError:
+    print("Error: 'customer_churn.csv' not found.")
+    exit()
+
+# Check if 'churn' column exists
+if 'churn' not in df.columns:
+    print("Error: Dataset must include a 'churn' column.")
+    exit()
+
+# Split features and target
+X = df.drop(columns=['churn'])
+y = df['churn']
+
+# Feature scaling
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Train/test split
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# Train logistic regression model
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# Prompt user for input
+print("\nEnter the following customer features:")
+new_data = []
+for col in X.columns:
+    val = float(input(f"{col}: "))
+    new_data.append(val)
+
+# Scale input data
+new_data_scaled = scaler.transform([new_data])
+
+# Make prediction
+prediction = model.predict(new_data_scaled)[0]
+probability = model.predict_proba(new_data_scaled)[0][1]
+
+# Output
+print("\n📊 Prediction Result:")
+print(f"Customer is predicted to churn: {'Yes' if prediction == 1 else 'No'}")
+print(f"Probability of churn: {probability:.2%}")
