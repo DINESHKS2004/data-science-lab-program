@@ -1,0 +1,49 @@
+import pandas as pd
+import numpy as np
+from scipy import stats
+
+# Load the CSV file
+try:
+    df = pd.read_csv("customer_reviews.csv")
+except FileNotFoundError:
+    print("Error: 'customer_reviews.csv' not found.")
+    exit()
+
+# Check for 'rating' column
+if 'rating' not in df.columns:
+    print("Error: 'rating' column not found in the dataset.")
+    exit()
+
+# Drop missing values in 'rating' column
+ratings = df['rating'].dropna()
+
+# User input for confidence level
+confidence_level = float(input("Enter the confidence level (e.g., 95 for 95%): "))
+alpha = 1 - (confidence_level / 100)
+
+# Sample statistics
+sample_size = len(ratings)
+mean_rating = np.mean(ratings)
+std_dev = np.std(ratings, ddof=1)
+std_error = std_dev / np.sqrt(sample_size)
+
+# t-score for the given confidence level
+t_score = stats.t.ppf(1 - alpha/2, df=sample_size - 1)
+
+# Margin of error and confidence interval
+margin_of_error = t_score * std_error
+lower_bound = mean_rating - margin_of_error
+upper_bound = mean_rating + margin_of_error
+
+# Results
+print(f"\nSample Mean Rating: {mean_rating:.2f}")
+print(f"{confidence_level:.0f}% Confidence Interval for Population Mean Rating: ({lower_bound:.2f}, {upper_bound:.2f})")
+print(f"Margin of Error: ±{margin_of_error:.2f}")
+
+# Optional: Basic Satisfaction Insight
+if mean_rating >= 4.0:
+    print("📊 Customer satisfaction is high.")
+elif mean_rating >= 3.0:
+    print("📊 Customer satisfaction is moderate.")
+else:
+    print("📉 Customer satisfaction is low.")
