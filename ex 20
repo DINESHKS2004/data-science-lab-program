@@ -1,0 +1,29 @@
+import numpy as np
+from scipy import stats
+
+# Simulated conversion rate data (you can replace with real data)
+# 1 = converted, 0 = not converted
+# For example: 100 visitors in each group
+design_A = np.random.binomial(n=1, p=0.10, size=100)  # 10% conversion
+design_B = np.random.binomial(n=1, p=0.15, size=100)  # 15% conversion
+
+# Compute conversion means
+mean_A = np.mean(design_A)
+mean_B = np.mean(design_B)
+
+print(f"Conversion Rate (Design A): {mean_A:.2%}")
+print(f"Conversion Rate (Design B): {mean_B:.2%}")
+
+# Perform independent two-sample t-test
+t_stat, p_value = stats.ttest_ind(design_A, design_B)
+
+# Display t-statistic and p-value
+print(f"\nT-statistic: {t_stat:.4f}")
+print(f"P-value: {p_value:.4f}")
+
+# Interpretation
+alpha = 0.05  # 95% confidence level
+if p_value < alpha:
+    print("Result: Statistically significant difference in conversion rates between Design A and Design B.")
+else:
+    print("Result: No statistically significant difference in conversion rates between Design A and Design B.")
