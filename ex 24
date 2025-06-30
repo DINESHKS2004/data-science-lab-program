@@ -1,0 +1,53 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
+
+# Load the dataset
+try:
+    df = pd.read_csv("patient_data.csv")  # Must have features + 'condition' column
+except FileNotFoundError:
+    print("Error: 'patient_data.csv' not found.")
+    exit()
+
+# Check required structure
+if 'condition' not in df.columns:
+    print("Error: The dataset must contain a 'condition' column.")
+    exit()
+
+# Separate features and target
+X = df.drop(columns=['condition'])
+y = df['condition']
+
+# Scale features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Train/test split (optional, just for testing accuracy)
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# Ask user for k value
+k = int(input("Enter the value of k (number of neighbors): "))
+
+# Fit KNN model
+knn = KNeighborsClassifier(n_neighbors=k)
+knn.fit(X_train, y_train)
+
+# Display feature names and prompt for new patient input
+print(f"\nEnter values for the following features:")
+new_data = []
+for col in X.columns:
+    val = float(input(f"{col}: "))
+    new_data.append(val)
+
+# Scale the input using the same scaler
+new_data_scaled = scaler.transform([new_data])
+
+# Make prediction
+prediction = knn.predict(new_data_scaled)
+proba = knn.predict_proba(new_data_scaled)
+
+# Output
+print("\n🧪 Prediction Result:")
+print(f"The patient is predicted to have the condition: {'Yes' if prediction[0] == 1 else 'No'}")
+print(f"Probability - No Condition: {proba[0][0]:.2f}, Condition: {proba[0][1]:.2f}")
