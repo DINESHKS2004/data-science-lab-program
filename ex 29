@@ -1,0 +1,54 @@
+import pandas as pd
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+# Load dataset (can be replaced with CSV)
+data = load_breast_cancer(as_frame=True)
+df = data.frame
+
+# Show column names
+print("Available columns:")
+print(df.columns.tolist())
+
+# Ask user to specify target and feature columns
+target_column = input("\nEnter the name of the target variable: ")
+
+if target_column not in df.columns:
+    print("Error: Invalid target column name.")
+    exit()
+
+feature_columns_input = input("Enter feature column names separated by commas: ")
+feature_columns = [col.strip() for col in feature_columns_input.split(',')]
+
+# Validate feature columns
+for col in feature_columns:
+    if col not in df.columns:
+        print(f"Error: Feature column '{col}' not found in dataset.")
+        exit()
+
+# Split data
+X = df[feature_columns]
+y = df[target_column]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train a model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+# Predict
+y_pred = model.predict(X_test)
+
+# Evaluate
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred, zero_division=0)
+recall = recall_score(y_test, y_pred, zero_division=0)
+f1 = f1_score(y_test, y_pred, zero_division=0)
+
+# Display results
+print("\n📊 Evaluation Metrics:")
+print(f"Accuracy:  {accuracy:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall:    {recall:.4f}")
+print(f"F1-Score:  {f1:.4f}")
