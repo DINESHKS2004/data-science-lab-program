@@ -1,0 +1,20 @@
+import pandas as pd
+
+# Sample data simulating sales data
+data = {
+    'product_name': ['Laptop', 'Mouse', 'Laptop', 'Keyboard', 'Mouse', 'Monitor', 'Mouse', 'Monitor', 'Keyboard'],
+    'order_quantity': [2, 1, 3, 4, 2, 1, 5, 2, 1]
+}
+
+# Create the DataFrame
+sales_data = pd.DataFrame(data)
+
+# Group by product_name and sum order quantities
+total_sales = sales_data.groupby('product_name')['order_quantity'].sum()
+
+# Sort in descending order and get top 5
+top_5_products = total_sales.sort_values(ascending=False).head(5)
+
+# Display results
+print("Top 5 most sold products in the past month:")
+print(top_5_products)
