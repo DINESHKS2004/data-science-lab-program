@@ -1,0 +1,32 @@
+import pandas as pd
+import numpy as np
+from scipy import stats
+
+# Simulated sample data: 25 patients in each group (replace with actual data if available)
+np.random.seed(42)  # For reproducibility
+
+# Simulate blood pressure reduction values (in mmHg)
+drug_group = np.random.normal(loc=12, scale=4, size=25)     # Drug: mean reduction ~12 mmHg
+placebo_group = np.random.normal(loc=5, scale=3, size=25)   # Placebo: mean reduction ~5 mmHg
+
+# Convert to DataFrame for analysis (optional)
+df = pd.DataFrame({
+    'drug_group': drug_group,
+    'placebo_group': placebo_group
+})
+
+# Function to calculate 95% confidence interval
+def confidence_interval(data, confidence=0.95):
+    n = len(data)
+    mean = np.mean(data)
+    std_err = stats.sem(data)
+    h = std_err * stats.t.ppf((1 + confidence) / 2, n - 1)
+    return mean - h, mean + h
+
+# Calculate CIs
+drug_ci = confidence_interval(drug_group)
+placebo_ci = confidence_interval(placebo_group)
+
+# Print results
+print(f"95% Confidence Interval for Drug Group Mean Reduction: {drug_ci}")
+print(f"95% Confidence Interval for Placebo Group Mean Reduction: {placebo_ci}")
