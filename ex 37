@@ -1,0 +1,54 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import pearsonr
+
+# Step 1: Load dataset
+try:
+    df = pd.read_csv("student_study_scores.csv")  # Replace with your file
+except FileNotFoundError:
+    print("❌ Error: 'student_study_scores.csv' not found.")
+    exit()
+
+# Step 2: Display dataset preview
+print("📊 Data Preview:")
+print(df.head())
+
+# Step 3: Check for required columns
+if 'study_hours' not in df.columns or 'exam_score' not in df.columns:
+    print("❌ Error: Dataset must contain 'study_hours' and 'exam_score' columns.")
+    exit()
+
+# Step 4: Calculate correlation coefficient
+correlation, p_value = pearsonr(df['study_hours'], df['exam_score'])
+print(f"\n📈 Pearson Correlation Coefficient: {correlation:.4f}")
+print(f"P-value: {p_value:.4f}")
+
+# Step 5: Plotting the relationship
+
+# Scatter plot
+plt.figure(figsize=(8, 5))
+sns.scatterplot(data=df, x='study_hours', y='exam_score', color='blue')
+plt.title("Study Hours vs. Exam Score")
+plt.xlabel("Study Time (Hours)")
+plt.ylabel("Exam Score")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# Regression line plot
+plt.figure(figsize=(8, 5))
+sns.regplot(data=df, x='study_hours', y='exam_score', color='green')
+plt.title("Regression Line: Study Time vs. Exam Score")
+plt.xlabel("Study Time (Hours)")
+plt.ylabel("Exam Score")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# Heatmap of correlation
+plt.figure(figsize=(6, 4))
+sns.heatmap(df[['study_hours', 'exam_score']].corr(), annot=True, cmap='coolwarm')
+plt.title("Correlation Heatmap")
+plt.tight_layout()
+plt.show()
