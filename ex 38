@@ -1,0 +1,43 @@
+import pandas as pd
+
+# Step 1: Load the dataset
+try:
+    df = pd.read_csv("city_temperatures.csv")  # Replace with your actual filename
+except FileNotFoundError:
+    print("❌ Error: 'city_temperatures.csv' not found.")
+    exit()
+
+# Preview dataset
+print("\n📊 Dataset Preview:")
+print(df.head())
+
+# Check structure
+if 'city' not in df.columns or 'temperature' not in df.columns:
+    print("❌ Dataset must contain 'city' and 'temperature' columns.")
+    exit()
+
+# Step 2: Group by city and compute statistics
+grouped = df.groupby('city')['temperature']
+
+# Mean temperature for each city
+mean_temps = grouped.mean()
+print("\n🌡️ Mean Temperature by City:")
+print(mean_temps)
+
+# Standard deviation for each city
+std_devs = grouped.std()
+print("\n📉 Standard Deviation of Temperature by City:")
+print(std_devs)
+
+# Temperature range (max - min) for each city
+temp_ranges = grouped.max() - grouped.min()
+print("\n📈 Temperature Range (Max - Min) by City:")
+print(temp_ranges)
+
+# Step 3: Find the city with the highest temperature range
+max_range_city = temp_ranges.idxmax()
+print(f"\n🔥 City with Highest Temperature Range: {max_range_city} ({temp_ranges[max_range_city]:.2f}°)")
+
+# Step 4: Find the city with the most consistent temperature
+most_consistent_city = std_devs.idxmin()
+print(f"❄️ City with Most Consistent Temperature: {most_consistent_city} (Std Dev: {std_devs[most_consistent_city]:.2f}°)")
