@@ -1,0 +1,57 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+
+# Sample dataset: Replace this with your actual data
+data = {
+    'age': [23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53, 55, 57],
+    'fat_percent': [18.2, 20.1, 19.3, 21.5, 22.7, 24.2, 25.5, 26.1, 27.8, 28.4, 29.0, 30.5, 31.7, 32.3, 33.1, 34.0, 35.6, 36.2]
+}
+
+# Create a DataFrame
+df = pd.DataFrame(data)
+
+# Descriptive statistics
+print("Mean:\n", df.mean())
+print("\nMedian:\n", df.median())
+print("\nStandard Deviation:\n", df.std())
+
+# --- Plotting ---
+
+# Boxplots
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+sns.boxplot(y=df['age'], color='skyblue')
+plt.title("Boxplot of Age")
+
+plt.subplot(1, 2, 2)
+sns.boxplot(y=df['fat_percent'], color='lightgreen')
+plt.title("Boxplot of % Fat")
+
+plt.tight_layout()
+plt.show()
+
+# Scatter Plot
+plt.figure(figsize=(6, 5))
+sns.scatterplot(x='age', y='fat_percent', data=df, color='red')
+plt.title("Scatter Plot of Age vs % Fat")
+plt.xlabel("Age")
+plt.ylabel("% Fat")
+plt.grid(True)
+plt.show()
+
+# Q-Q Plots
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+stats.probplot(df['age'], dist="norm", plot=plt)
+plt.title("Q-Q Plot for Age")
+
+plt.subplot(1, 2, 2)
+stats.probplot(df['fat_percent'], dist="norm", plot=plt)
+plt.title("Q-Q Plot for % Fat")
+
+plt.tight_layout()
+plt.show()
